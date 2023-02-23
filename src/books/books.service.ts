@@ -1,22 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { Books } from './books.entity';
 import { CreateBookDTO } from './dto/createBookDTO';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class BooksService {
-
-  private books: Books[] = [
-    {
-      title: 'l\'etranger',
-      author: 'Albert Camus',
-    },
-  ];
+  constructor(private readonly prisma: PrismaService) {}
 
   findAll() {
-    return this.books;
+    return this.prisma.book.findMany();
   }
 
-  create(book: CreateBookDTO) {
-    return this.books.push(book);
+  findById(id: number) {
+    return this.prisma.book.findUnique({ where: { id: Number(id) } });
+  }
+
+  async create(book: CreateBookDTO) {
+    return await this.prisma.book.create({ data: book });
+  }
+
+  async delete(id: number) {
+    return await this.prisma.book.delete({ where: { id: id } });
   }
 }
