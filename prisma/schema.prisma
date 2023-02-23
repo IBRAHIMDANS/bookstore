@@ -18,7 +18,4 @@ model Book {
   genre     String @default("Other")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
-
-
-
 }
