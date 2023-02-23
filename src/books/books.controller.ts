@@ -1,16 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  ValidationPipe,
-} from '@nestjs/common';
-import { BooksService } from './books.service';
-import { CreateBookDTO } from './dto/createBookDTO';
+import { Body, Controller, Delete, Get, Param, Post, ValidationPipe } from "@nestjs/common";
+import { BooksService } from "./books.service";
+import { CreateBookDTO } from "./dto/createBookDTO";
 
-@Controller('books')
+@Controller("books")
 export class BooksController {
   constructor(private bookService: BooksService) {}
 
@@ -19,8 +11,8 @@ export class BooksController {
     return this.bookService.findAll();
   }
 
-  @Get('/:id')
-  findById(@Param('id') id: number) {
+  @Get("/:id")
+  findById(@Param("id") id: number) {
     return this.bookService.findById(id);
   }
 
@@ -30,7 +22,7 @@ export class BooksController {
   }
 
   @Delete()
-  delete(@Param('id') id: number) {
+  delete(@Param("id") id: number) {
     return this.bookService.delete(id);
   }
 }
