@@ -4,18 +4,45 @@ import { CreateUserDto } from '@/modules/auth/dto/create-user.dto';
 import { compare, hash } from 'bcryptjs';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+
+export type TokenType = {
+  expiresIn: string;
+  accessToken: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  isActive: boolean;
+  id: string;
+};
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService, private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
-  async create(user: CreateUserDto) {
-    user.password = await hash(user.password, 10);
+  async signUp(user: CreateUserDto) {
+    const userFound = await this.prisma.user.findUnique({ where: { email: user.email } });
+    if (userFound) {
+      throw new UnauthorizedException();
+    }
 
-    return await this.prisma.user.create({ data: user });
+    return await this.prisma.user.create({
+      data: {
+        email: user.email,
+        password: await hash(user.password, 10),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isActive: user.isActive,
+        role: user.role,
+      },
+    });
   }
 
-  async signIn(user: AuthCredentialsDto): Promise<{ message: string; token: { access_token: string } }> {
+  async signIn(user: AuthCredentialsDto): Promise<{ message: string; token: TokenType }> {
     const userFound = await this.findUserByEmail(user.email);
 
     await this.comparePassword(user.password, userFound.password);
@@ -23,21 +50,25 @@ export class AuthService {
     return { message: 'User logged in', token };
   }
 
-  private createToken(user: any) {
-    const payload = { sub: user.id };
-    return {
-      access_token: this.jwtService.sign(payload, {
-        secret: 'mySecret',
-      }),
-    };
-  }
-
-  private async findUserByEmail(email: string) {
-    const userFound = await this.prisma.user.findUnique({ where: { email } });
-    if (!userFound) {
+  async deleteMyAccount(user) {
+    try {
+      await this.prisma.user.delete({ where: { id: user.id } });
+    } catch (e) {
       throw new NotFoundException('User not found');
     }
-    return userFound;
+    return { message: 'User deleted' };
+  }
+
+  private createToken(user: any): TokenType {
+    return {
+      expiresIn: this.configService.get('auth.expiresIn'),
+      accessToken: this.jwtService.sign({ id: user.id }),
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      isActive: user.isActive,
+      id: user.id,
+    };
   }
 
   private async comparePassword(password: string, passwordFound: string): Promise<boolean> {
@@ -46,5 +77,15 @@ export class AuthService {
       throw new UnauthorizedException('invalid credentials');
     }
     return isPasswordValid;
+  }
+
+  private async findUserByEmail(email: string) {
+    const userFound = await this.prisma.user.findUnique({
+      where: { email: email },
+    });
+    if (!userFound || userFound.isActive === false) {
+      throw new UnauthorizedException('invalid credentials or user not isActive yet ');
+    }
+    return userFound;
   }
 }

@@ -1,11 +1,11 @@
 import { IsInt, IsNumber, IsOptional, IsString, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateBookDTO {
+export class CreateBookDto {
   @ApiProperty({ required: false, description: "Book's id (optional)" })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  id?: number;
+  id?: string;
 
   @ApiProperty({
     required: true,

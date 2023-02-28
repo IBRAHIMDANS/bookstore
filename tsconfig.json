@@ -21,10 +21,10 @@
     "esModuleInterop": true,
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ],
       "@modules": [
-        "src/modules/*"
+        "./src/modules/*"
       ]
     }
   }

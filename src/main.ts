@@ -4,7 +4,6 @@ import { PrismaService } from './modules/prisma/prisma.service';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
-import morgan from 'morgan';
 import compression from 'compression';
 import helmet from 'helmet';
 import { ValidationPipe } from '@nestjs/common';
@@ -15,8 +14,6 @@ async function bootstrap() {
   app.enableCors({ origin: process.env.CORS_ORIGIN, credentials: true });
   // config cookie parser
   app.use(cookieParser());
-  // config morgan
-  app.use(morgan('dev'));
   // config compression
   app.use(compression());
   // config helmet

@@ -1,8 +1,10 @@
-import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { CreateUserDto } from '@/modules/auth/dto/create-user.dto';
 import { AuthCredentialsDto } from '@/modules/auth/dto/auth.credentials.dto';
 import { AuthService } from '@/modules/auth/auth.service';
 import { ApiConflictResponse, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
+import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -14,7 +16,7 @@ export class AuthController {
   @ApiOperation({ operationId: 'signUp' })
   @Post('/sign-up')
   create(@Body(ValidationPipe) user: CreateUserDto) {
-    return this.authService.create(user);
+    return this.authService.signUp(user);
   }
 
   @ApiCreatedResponse({ description: 'User signed in successfully' })
@@ -23,5 +25,12 @@ export class AuthController {
   @Post('/sign-in')
   signIn(@Body(ValidationPipe) user: AuthCredentialsDto) {
     return this.authService.signIn(user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/delete')
+  deleteMyAccount(@CurrentUser() user) {
+    console.log(user);
+    return this.authService.deleteMyAccount(user);
   }
 }
