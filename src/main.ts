@@ -33,13 +33,13 @@ async function bootstrap() {
   await prismaService.enableShutdownHooks(app);
   const config = new DocumentBuilder()
     .setTitle('Book Store')
-    .setDescription('bookStore API ')
+    .setDescription('bookStore API')
     .setVersion('1.0')
-    .addTag('books')
+    .addTag('books store')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('swagger', app, document);
+  SwaggerModule.setup('api', app, document);
 
   // launch server
   await app.listen(configService.get('PORT'), () => {

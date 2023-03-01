@@ -2,13 +2,17 @@ import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import { UsersService } from '@/modules/users/users.service';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
-import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiConflictResponse, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UpdateUserDto } from '@/modules/users/dto/update-user.dto';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({ operationId: 'findAll' })
+  @ApiCreatedResponse({ description: 'Users found successfully' })
+  @ApiConflictResponse()
   @Get()
   @UseGuards(JwtAuthGuard)
   findAll() {

@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 
 import { UsersModule } from '@/modules/users/users.module';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { BooksModule } from '@/modules/books/books.module';
-import { ConfigModule } from '@nestjs/config';
+import { ReviewsModule } from '@/modules/reviews/reviews.module';
+
 import auth from './config/auth';
 
 @Module({
@@ -16,6 +18,8 @@ import auth from './config/auth';
     BooksModule,
     AuthModule,
     UsersModule,
+    ReviewsModule,
   ],
+  providers: [],
 })
 export class AppModule {}
