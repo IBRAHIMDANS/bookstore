@@ -4,9 +4,27 @@ import { UpdateUserDto } from '@/modules/users/dto/update-user.dto';
 import { User } from '@prisma/client';
 import { hash } from 'bcryptjs';
 
+export type GetMyProfile = {
+  message: string;
+  profile: Omit<User, 'password' | 'createdAt' | 'updatedAt' | 'isDeleted' | 'deletedAt' | 'authentications'>;
+};
+
 @Injectable()
 export class UsersService {
   constructor(private readonly primsa: PrismaService) {}
+
+  getMyProfile(user: User): GetMyProfile {
+    delete user.password;
+    delete user.createdAt;
+    delete user.updatedAt;
+    delete user.isDeleted;
+    delete user.deletedAt;
+    delete user.authentications;
+    return {
+      message: 'Update current user data successfully',
+      profile: user,
+    };
+  }
 
   async findById(id: string): Promise<User> {
     return await this.primsa.user.findUnique({
@@ -25,23 +43,14 @@ export class UsersService {
       user.password = await hash(user.password, 10);
     }
     try {
-      const newUser = await this.primsa.user.update({
+      currentUser = await this.primsa.user.update({
         where: { id: currentUser.id },
         data: user,
       });
-      delete newUser.password;
-      delete newUser.createdAt;
-      delete newUser.updatedAt;
-      delete newUser.isDeleted;
-      delete newUser.deletedAt;
-      delete newUser.authentications;
-      return {
-        message: 'Update current user data successfully',
-        data: newUser,
-      };
     } catch (e) {
       return new BadRequestException(e.message);
     }
+    return this.getMyProfile(currentUser);
   }
 
   async findCurrentUser(user: User) {
