@@ -1,12 +1,25 @@
-import { Module } from "@nestjs/common";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
-import { BooksModule } from "./books/books.module";
-import { PrismaService } from "./prisma/prisma.service";
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+
+import { UsersModule } from '@/modules/users/users.module';
+import { AuthModule } from '@/modules/auth/auth.module';
+import { BooksModule } from '@/modules/books/books.module';
+import { ReviewsModule } from '@/modules/reviews/reviews.module';
+
+import auth from './config/auth';
 
 @Module({
-  imports: [BooksModule],
-  controllers: [AppController],
-  providers: [AppService, PrismaService],
+  imports: [
+    ConfigModule.forRoot({
+      load: [auth],
+      isGlobal: true,
+      cache: true,
+    }),
+    BooksModule,
+    AuthModule,
+    UsersModule,
+    ReviewsModule,
+  ],
+  providers: [],
 })
 export class AppModule {}

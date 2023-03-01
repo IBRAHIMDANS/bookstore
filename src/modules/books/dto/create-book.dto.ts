@@ -1,16 +1,16 @@
-import { IsInt, IsNumber, IsOptional, IsString, Length } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
+import { IsInt, IsNumber, IsOptional, IsString, Length } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateBookDTO {
+export class CreateBookDto {
   @ApiProperty({ required: false, description: "Book's id (optional)" })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  id?: number;
+  id?: string;
 
   @ApiProperty({
     required: true,
     description: "Book's title",
-    default: "The Lord of the Rings",
+    default: 'The Lord of the Rings',
   })
   @IsString()
   @Length(3, 200)
@@ -19,7 +19,7 @@ export class CreateBookDTO {
   @ApiProperty({
     required: true,
     description: "Book's author",
-    default: "J.R.R. Tolkien",
+    default: 'J.R.R. Tolkien',
   })
   @IsString()
   @Length(3, 65)
