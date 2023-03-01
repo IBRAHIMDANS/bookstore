@@ -28,9 +28,11 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ operationId: 'deleteMyAccount' })
+  @ApiCreatedResponse({ description: 'User deleted successfully' })
+  @ApiConflictResponse()
   @Delete('/delete')
   deleteMyAccount(@CurrentUser() user) {
-    console.log(user);
     return this.authService.deleteMyAccount(user);
   }
 }

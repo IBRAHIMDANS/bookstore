@@ -5,16 +5,7 @@ import { compare, hash } from 'bcryptjs';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-
-export type TokenType = {
-  expiresIn: string;
-  accessToken: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  isActive: boolean;
-  id: string;
-};
+import { TokenDto } from '@/modules/auth/dto/token.dto';
 
 @Injectable()
 export class AuthService {
@@ -42,7 +33,7 @@ export class AuthService {
     });
   }
 
-  async signIn(user: AuthCredentialsDto): Promise<{ message: string; token: TokenType }> {
+  async signIn(user: AuthCredentialsDto): Promise<{ message: string; token: TokenDto }> {
     const userFound = await this.findUserByEmail(user.email);
 
     await this.comparePassword(user.password, userFound.password);
@@ -59,7 +50,7 @@ export class AuthService {
     return { message: 'User deleted' };
   }
 
-  private createToken(user: any): TokenType {
+  private createToken(user: any): TokenDto {
     return {
       expiresIn: this.configService.get('auth.expiresIn'),
       accessToken: this.jwtService.sign({ id: user.id }),
