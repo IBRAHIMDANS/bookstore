@@ -26,4 +26,13 @@ export class CreateUserDto extends AuthCredentialsDto {
     default: true,
   })
   isActive?: boolean;
+
+  @IsBoolean({ message: 'isEmailVerified must be a boolean' })
+  @IsOptional()
+  @ApiProperty({
+    required: false,
+    description: "User's isEmailVerified",
+    default: false,
+  })
+  isEmailVerified?: boolean;
 }

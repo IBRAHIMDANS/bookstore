@@ -42,6 +42,14 @@ export class UsersService {
     if (user.password) {
       user.password = await hash(user.password, 10);
     }
+    // Add email verification, if email is changed
+    if (user.email && user.email !== currentUser.email) {
+      const userFound = await this.primsa.user.findUnique({ where: { email: user.email } });
+      if (userFound) {
+        return new BadRequestException('User already exists');
+      }
+      user.isActive = false;
+    }
     try {
       currentUser = await this.primsa.user.update({
         where: { id: currentUser.id },
