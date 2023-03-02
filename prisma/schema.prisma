@@ -15,6 +15,7 @@ model User {
   firstName       String               @default("John")
   lastName        String               @default("Doe")
   email           String               @unique
+  isEmailVerified Boolean              @default(false)
   password        String
   createdAt       DateTime             @default(now())
   updatedAt       DateTime             @default(now()) @updatedAt
