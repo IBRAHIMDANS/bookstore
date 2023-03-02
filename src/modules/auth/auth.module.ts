@@ -8,6 +8,7 @@ import { JwtStrategy } from '@/modules/auth/strategies/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
+import { MailsService } from '@/modules/mails/mails.service';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, PrismaService],
+  providers: [AuthService, LocalStrategy, JwtStrategy, PrismaService, MailsService],
   exports: [AuthService, JwtModule],
   controllers: [AuthController],
 })

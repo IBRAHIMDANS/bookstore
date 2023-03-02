@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { CreateUserDto } from '@/modules/auth/dto/create-user.dto';
 import { AuthCredentialsDto } from '@/modules/auth/dto/auth.credentials.dto';
 import { AuthService } from '@/modules/auth/auth.service';
@@ -34,5 +34,13 @@ export class AuthController {
   @Delete('/delete')
   deleteMyAccount(@CurrentUser() user) {
     return this.authService.deleteMyAccount(user);
+  }
+
+  @ApiOperation({ operationId: 'confirmEmail' })
+  @ApiCreatedResponse({ description: 'User confirmed successfully' })
+  @ApiConflictResponse()
+  @Get('/confirm/:id')
+  confirmEmail(@Param('id') id: string, @Query('token') token: string) {
+    return this.authService.confirmEmail(id, token);
   }
 }
