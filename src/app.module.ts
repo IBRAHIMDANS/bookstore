@@ -7,13 +7,12 @@ import { BooksModule } from '@/modules/books/books.module';
 import { ReviewsModule } from '@/modules/reviews/reviews.module';
 import { MailsModule } from './modules/mails/mails.module';
 
-import auth from './config/auth';
-import mail from '@/config/mail';
+import { app, auth, mail } from '@/config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [auth, mail],
+      load: [app, auth, mail],
       isGlobal: true,
       cache: true,
     }),

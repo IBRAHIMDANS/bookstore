@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as mailjet from 'node-mailjet';
+import { Message } from '@/modules/mails/mail.types';
 
 @Injectable()
 export class MailsService {
@@ -9,49 +10,46 @@ export class MailsService {
   private transporter;
 
   constructor(private readonly config: ConfigService) {
-    this.baseUrl = 'http://localhost:3000';
-    this.from = 'no-reply@localhost';
+    this.baseUrl = this.config.get('app.baseUrl');
+    this.from = this.config.get('mail.senderEmail');
     this.transporter = new mailjet.Client({
       apiKey: this.config.get('mail.username'),
       apiSecret: this.config.get('mail.password'),
     });
   }
 
-  async sendConfirmationEmail(email: string, token: string) {
-    const url = `${this.baseUrl}/auth/confirm/${token}`;
-    const html = `
-      <p>Please confirm your email by clicking on the following link:</p>
-      <a href='${url}'>${url}</a>
-    `;
-    await this.sendEmail(email, 'Please confirm your email', html);
-  }
-
-  async sendResetPasswordEmail(email: string, token: string) {
-    const url = `${this.baseUrl}/auth/reset-password/${token}`;
-    const html = `
-      <p>Please reset your password by clicking on the following link:</p>
-      <a href='${url}'>${url}</a>
-    `;
-    await this.sendEmail(email, 'Reset your password', html);
-  }
-
-  async sendEmail(to: string, subject: string, html: string) {
-    const msg = {
+  async sendEmail({
+    to,
+    subject,
+    html,
+    templateId,
+    variables,
+  }: {
+    to: string;
+    subject: string;
+    html?: string;
+    templateId?: number;
+    variables?: { [key: string]: string | number };
+  }): Promise<any> {
+    const msg: Message = {
       to,
       from: this.from,
+      name: 'Book Store',
       subject,
+      templateId,
+      variables,
       html,
     };
-    await this.send(msg);
+    return this.send(msg);
   }
 
-  async send(msg) {
+  async send(msg: Message) {
     return this.transporter.post('send', { version: 'v3.1' }).request({
       Messages: [
         {
           From: {
             Email: msg.from,
-            Name: 'Book Store',
+            Name: msg.name,
           },
           To: [
             {
@@ -59,12 +57,13 @@ export class MailsService {
               Name: msg.to,
             },
           ],
-          TemplateID: msg.TemplateID,
-          TemplateLanguage: true,
           Subject: msg.subject,
-          Variables: {
-            ...msg,
-          },
+          ...(msg.templateId && {
+            TemplateID: msg.templateId,
+            TemplateLanguage: true,
+          }),
+          ...(msg.html && { HtmlPart: msg.html }),
+          ...(msg.variables && { Variables: msg.variables }),
         },
       ],
     });
