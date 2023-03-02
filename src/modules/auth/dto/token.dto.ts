@@ -26,6 +26,10 @@ export class TokenDto {
   @ApiProperty({ required: true, description: "User's token" })
   isActive: boolean;
 
+  @IsBoolean({ message: 'Token must be a boolean' })
+  @ApiProperty({ required: true, description: "User's token" })
+  isEmailVerified: boolean;
+
   @IsString({ message: 'Token must be a string' })
   @ApiProperty({ required: true, description: "User's token" })
   id: string;
