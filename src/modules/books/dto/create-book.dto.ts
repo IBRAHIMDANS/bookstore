@@ -1,7 +1,6 @@
 import {
   ArrayMinSize,
   IsArray,
-  IsInt,
   IsNotEmpty,
   IsNumber,
   IsObject,
@@ -14,7 +13,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { transformArray } from '@/utils';
 import { CreateAuthorDto } from '@/modules/authors/dto/create-author.dto';
-import { CreateGenreDto } from '@/modules/genres/dto/create-genre.dto';
 
 export class CreateBookDto {
   @ApiProperty({ required: false, description: "Book's id (optional)" })
@@ -57,6 +55,7 @@ export class CreateBookDto {
   @IsString()
   @IsOptional()
   description?: string;
+
 
   @ApiProperty({ required: false, description: "Book's price (optional)" })
   @IsNumber()
