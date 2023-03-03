@@ -29,7 +29,7 @@ export class BooksController {
   @ApiConflictResponse()
   @Post()
   create(@Body(ValidationPipe) book: CreateBookDto) {
-    return this.bookService.create(book);
+    return this.bookService.findOrCreate(book);
   }
 
   @ApiOperation({ operationId: 'delete' })
