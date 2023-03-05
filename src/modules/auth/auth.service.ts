@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { TokenDto } from '@/modules/auth/dto/token.dto';
 import { MailsService } from '@/modules/mails/mails.service';
+import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -29,6 +30,7 @@ export class AuthService {
         password: await hash(user.password, 10),
         firstName: user.firstName,
         lastName: user.lastName,
+        username: user.username,
         isActive: user.isActive,
         role: user.role,
       },
@@ -128,5 +130,59 @@ export class AuthService {
       isEmailVerified: user.isEmailVerified,
       id: user.id,
     };
+  }
+
+  async forgotPassword({ email }: ForgotPasswordDto) {
+    if (!email) {
+      throw new BadRequestException('Email is required');
+    }
+
+    const userFound = await this.prisma.user.findUnique({
+      where: { email: email },
+    });
+    if (!userFound) {
+      throw new NotFoundException('User not found');
+    }
+    const token = this.jwtService.sign({ id: userFound.id }, { expiresIn: 60 * 15 });
+    const mail = await this.mailService.sendEmail({
+      to: userFound.email,
+      subject: 'Reset your password',
+      html: `
+        <p>Hi ${userFound.firstName},</p>
+        <p>Click on the link below to reset your password</p>
+        <p> Be carreful the link are valid for 15 minutes. :) </p>
+        <a href='${this.configService.get('app.baseUrl')}/api/v1/auth/reset-password/${
+        userFound.id
+      }?token=${token}' > Reset password </a>
+      `,
+    });
+    return Promise.all([userFound, mail])
+      .then(() => {
+        return { message: 'Email sent' };
+      })
+      .catch(e => {
+        throw new BadRequestException(e.message);
+      });
+  }
+
+  async resetPassword({ password }, token: string) {
+    try {
+      const { email } = this.jwtService.verify(token);
+
+      const userFoundByEmail = await this.prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (!userFoundByEmail) {
+        throw new NotFoundException('User not found');
+      }
+
+      await this.prisma.user.update({
+        where: { email },
+        data: { password: await hash(password, 10) },
+      });
+    } catch {
+      throw new UnauthorizedException('Token expired');
+    }
   }
 }

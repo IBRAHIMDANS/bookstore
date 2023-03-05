@@ -1,10 +1,23 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { PrismaService } from '@/modules/prisma/prisma.service';
+import { AuthorsService } from '@/modules/authors/authors.service';
+import { GenresService } from '@/modules/genres/genres.service';
+import { UpdateBookDto } from '@/modules/books/dto/update-book.dto';
 
 @Injectable()
 export class BooksService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly authorsService: AuthorsService,
+    private readonly genresService: GenresService,
+  ) {}
 
   findAll() {
     return this.prisma.book.findMany();
@@ -18,11 +31,42 @@ export class BooksService {
     return book;
   }
 
+  async findOrCreate(book: CreateBookDto) {
+    const bookFound = await this.prisma.book.findUnique({
+      where: {
+        title_publicationYear_language: {
+          title: book.title,
+          language: book.language,
+          publicationYear: book.publicationYear,
+        },
+      },
+    });
+    if (bookFound) {
+      throw new HttpException('Book already exists', 400);
+    }
+    return await this.create(book);
+  }
+
   async create(book: CreateBookDto) {
     try {
-      return await this.prisma.book.create({ data: book });
+      const authors = await this.authorsService.findOrCreate(book.authors);
+      const genres = await this.genresService.findOrCreate(book.genres);
+
+      return await this.prisma.book.create({
+        data: {
+          ...book,
+          genres: {
+            connect: genres.map(genre => ({ id: genre.id })),
+          },
+          authors: {
+            connect: authors.map(author => ({ id: author.id })),
+          },
+        },
+        include: { authors: true, genres: true },
+      });
     } catch (e) {
-      throw new UnauthorizedException('Error Book not created');
+      console.log(e.message);
+      throw new BadRequestException('Error book not created   ', e.message);
     }
   }
 
@@ -34,5 +78,38 @@ export class BooksService {
     } catch (e) {
       throw new UnauthorizedException('Error Book not deleted');
     }
+  }
+
+  async update({ id, book }: { book: UpdateBookDto; id: string }) {
+    await this.findById(id);
+    const data: any = book;
+    console.log(data, 'data');
+    if (book.authors) {
+      const authors = await this.authorsService.findOrCreate(book.authors);
+      data.authors = {
+        set: [],
+        connect: authors.map(author => ({ id: author.id })),
+      };
+    }
+    if (book.genres) {
+      const genres = await this.genresService.findOrCreate(book.genres);
+      data.genres = {
+        set: [],
+        connect: genres.map(genre => ({ id: genre.id })),
+      };
+    }
+    try {
+      await this.prisma.book.update({
+        where: { id },
+        data: {
+          ...data,
+        },
+        include: { authors: true, genres: true },
+      });
+    } catch (e) {
+      console.log(e.message);
+      return new UnauthorizedException(e);
+    }
+    return 'book updated';
   }
 }

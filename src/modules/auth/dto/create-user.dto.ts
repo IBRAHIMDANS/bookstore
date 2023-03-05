@@ -1,6 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsEnum, IsOptional, IsString, Length } from 'class-validator';
+import {
+  IsAlphanumeric,
+  IsBoolean,
+  IsEnum,
+  IsLowercase,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 import { AuthCredentialsDto } from '@/modules/auth/dto/auth.credentials.dto';
+import { User } from '@prisma/client';
 
 export class CreateUserDto extends AuthCredentialsDto {
   @IsString({ message: 'FirstName must be a string' })
@@ -35,4 +45,12 @@ export class CreateUserDto extends AuthCredentialsDto {
     default: false,
   })
   isEmailVerified?: boolean;
+
+  @IsString({ message: 'username must be a string' })
+  @Length(3, 255)
+  @IsLowercase()
+  @IsAlphanumeric()
+  @IsNotEmpty({ message: 'username is required' })
+  @ApiProperty({ required: true, description: "User's username" })
+  username: string;
 }

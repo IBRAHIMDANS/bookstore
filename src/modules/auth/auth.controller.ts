@@ -1,10 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { CreateUserDto } from '@/modules/auth/dto/create-user.dto';
 import { AuthCredentialsDto } from '@/modules/auth/dto/auth.credentials.dto';
+import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
 import { AuthService } from '@/modules/auth/auth.service';
 import { ApiConflictResponse, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
+import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -42,5 +44,21 @@ export class AuthController {
   @Get('/confirm/:id')
   confirmEmail(@Param('id') id: string, @Query('token') token: string) {
     return this.authService.confirmEmail(id, token);
+  }
+
+  @ApiOperation({ operationId: 'forgotPassword' })
+  @ApiCreatedResponse({ description: 'User confirmed successfully' })
+  @ApiConflictResponse()
+  @Post('/forgot-password')
+  forgotPassword(@Body(ValidationPipe) forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto);
+  }
+
+  @ApiOperation({ operationId: 'resetPassword' })
+  @ApiCreatedResponse({ description: 'User confirmed successfully' })
+  @ApiConflictResponse()
+  @Post('/reset-password')
+  resetPassword(@Param('token') token: string, @Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto, token);
   }
 }

@@ -10,10 +10,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum AuthenticationType {
+  GOOGLE
+  FACEBOOK
+  EMAIL
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id              String               @id @default(uuid())
   firstName       String               @default("John")
   lastName        String               @default("Doe")
+  username        String?              @unique @default("JohnDoe")
   email           String               @unique
   isEmailVerified Boolean              @default(false)
   password        String
@@ -24,41 +36,68 @@ model User {
   isDeleted       Boolean              @default(false)
   isActive        Boolean              @default(true)
   role            Role                 @default(USER)
-  books           Book[]
-  reviews         Review[]
+
+  books   Book[]
+  reviews Review[]
 }
 
 model Book {
-  id               String   @id @default(uuid())
+  id               String  @id @default(uuid())
   title            String
-  author           String
-  plublicationYear Int      @default(value: 2023)
-  genre            String   @default("Other")
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @default(now()) @updatedAt
-  user             User?    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId           String?
-  reviews          Review[]
-}
-model Review {
-  id        String   @id @default(uuid())
-  comment   String?
-  note      Int
+  publicationYear Int     @default(value: 2023)
+  language         String? @default(value: "French")
+  color            String?
+  description      String?
+  price            Float
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId    String?
-  book      Book?    @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  bookId    String?
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String?
+
+  genres  Genre[]
+  authors Author[]
+  reviews Review[]
+
+  @@unique([title, publicationYear, language])
 }
 
-enum AuthenticationType {
-  GOOGLE
-  FACEBOOK
-  EMAIL
+model Review {
+  id      String  @id @default(uuid())
+  comment String?
+  note    Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String?
+
+  book   Book?   @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  bookId String?
+
+  @@unique([bookId, userId])
 }
 
-enum Role {
-  USER
-  ADMIN
+model Genre {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  books     Book[]
+}
+
+model Author {
+  id String @id @default(uuid())
+
+  firstName String
+  lastName  String
+  fullName  String @default(value: "John Doe")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  books     Book[]
+
+  @@unique([firstName, lastName, fullName])
 }
