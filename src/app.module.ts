@@ -8,6 +8,8 @@ import { ReviewsModule } from '@/modules/reviews/reviews.module';
 import { MailsModule } from './modules/mails/mails.module';
 
 import { app, auth, mail } from '@/config';
+import { AuthorsModule } from './modules/authors/authors.module';
+import { GenresModule } from './modules/genres/genres.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { app, auth, mail } from '@/config';
     UsersModule,
     ReviewsModule,
     MailsModule,
+    AuthorsModule,
+    GenresModule,
   ],
   providers: [],
 })
