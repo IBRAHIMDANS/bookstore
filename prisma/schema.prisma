@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["extendedWhereUnique"]
 }
 
 datasource db {
@@ -13,6 +14,7 @@ datasource db {
 enum AuthenticationType {
   GOOGLE
   FACEBOOK
+  APPLE
   EMAIL
 }
 
@@ -49,6 +51,7 @@ model Book {
   color            String?
   description      String?
   price            Float
+  verified         Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -66,7 +69,7 @@ model Book {
 model Review {
   id      String  @id @default(uuid())
   comment String?
-  note    Int
+  rating    Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
