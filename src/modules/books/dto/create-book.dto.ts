@@ -63,8 +63,16 @@ export class CreateBookDto {
   @IsNotEmpty()
   price: number;
 
-  @ApiProperty({ required: true, description: "Book's authors" })
-  // @Transform(transformArray)
+  @ApiProperty({
+    required: true,
+    description: "Book's authors",
+    example: [
+      {
+        firstName: 'Douglas',
+        lastName: 'Adams',
+      },
+    ],
+  })
   @ValidateNested({ each: true })
   @IsArray()
   @IsObject({ each: true })
@@ -72,7 +80,7 @@ export class CreateBookDto {
   @Type(() => CreateAuthorDto)
   authors: CreateAuthorDto[];
 
-  @ApiProperty()
+  @ApiProperty({ required: true, description: "Book's genres", example: ['Science Fiction', 'Comedy'] })
   @Transform(transformArray)
   @IsArray()
   @ArrayMinSize(1)

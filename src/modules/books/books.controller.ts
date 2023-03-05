@@ -1,7 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { ApiConflictResponse, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UpdateBookDto } from '@/modules/books/dto/update-book.dto';
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
+import { Book } from '@prisma/client';
+import { AdminGuard } from '@/modules/auth/guards/admin.auth.guard';
 
 @ApiTags('books')
 @Controller('books')
@@ -32,8 +36,17 @@ export class BooksController {
     return this.bookService.findOrCreate(book);
   }
 
+  // @UseGuards(JwtAuthGuard, AdminGuard)
+  @ApiOperation({ operationId: 'update' })
+  @ApiCreatedResponse({ description: 'Book updated' })
+  @ApiConflictResponse()
+  @Patch(':id')
+  update(@Body() book: UpdateBookDto, @Param('id') id: string) {
+    return this.bookService.update({ id, book });
+  }
+
   @ApiOperation({ operationId: 'delete' })
-  @ApiCreatedResponse({ description: 'Book deleted successfully' })
+  @ApiCreatedResponse({ status: 204, description: 'Book deleted successfully' })
   @ApiConflictResponse()
   @Delete(':id')
   delete(@Param('id') id: string) {
