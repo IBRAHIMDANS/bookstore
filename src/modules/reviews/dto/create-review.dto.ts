@@ -20,7 +20,6 @@ export class CreateReviewDto {
   rating: number;
 
   @IsString()
-  @IsOptional()
   @MinLength(1)
   @MaxLength(100)
   bookId: string;

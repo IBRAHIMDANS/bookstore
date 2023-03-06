@@ -110,6 +110,8 @@ export class BooksService {
       }
       throw new UnauthorizedException('Error book not created   ', e.message);
     }
+
+    return 'book updated';
   }
 
   async updateBookById({ id, book }: { book: UpdateBookDto; id: string }) {

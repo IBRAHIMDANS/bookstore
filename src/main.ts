@@ -7,9 +7,9 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import helmet from 'helmet';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
-import { HttpExceptionFilter } from '@/shared/exceptions/filters/http-exception.filter';
-import { BadRequestExceptionFilter } from '@/shared/exceptions/filters/bad.request.exception.filter';
-import { ResourceNotFoundExceptionFilter } from '@/shared/exceptions/filters/resource.not.found.exception.filter';
+// import { HttpExceptionFilter } from '@/shared/exceptions/filters/http-exception.filter';
+// import { BadRequestExceptionFilter } from '@/shared/exceptions/filters/bad.request.exception.filter';
+// import { ResourceNotFoundExceptionFilter } from '@/shared/exceptions/filters/resource.not.found.exception.filter';
 import { LoggingInterceptor } from '@/shared/logging.interceptor';
 
 async function bootstrap() {
