@@ -31,11 +31,11 @@ export class ReviewsController {
 
   @ApiCreatedResponse({ description: 'Review found successfully' })
   @ApiConflictResponse()
-  @ApiOperation({ operationId: 'findOne' })
+  @ApiOperation({ operationId: 'findById' })
   @ApiParam({ name: 'id', description: 'Review id' })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.reviewsService.findOne(id);
+  findById(@Param('id') id: string) {
+    return this.reviewsService.findById(id);
   }
 
   @ApiCreatedResponse({ description: 'Review updated successfully' })

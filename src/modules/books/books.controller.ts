@@ -32,7 +32,7 @@ export class BooksController {
   @ApiCreatedResponse({ description: 'Book created successfully' })
   @ApiConflictResponse()
   @Post()
-  create(@Body(ValidationPipe) book: CreateBookDto) {
+  createBook(@Body(ValidationPipe) book: CreateBookDto) {
     return this.bookService.findOrCreate(book);
   }
 
@@ -41,15 +41,16 @@ export class BooksController {
   @ApiCreatedResponse({ description: 'Book updated' })
   @ApiConflictResponse()
   @Patch(':id')
-  update(@Body() book: UpdateBookDto, @Param('id') id: string) {
-    return this.bookService.update({ id, book });
+  updateBookById(@Body() book: UpdateBookDto, @Param('id') id: string) {
+    return this.bookService.updateBookById({ id, book });
   }
 
+  // @UseGuards(JwtAuthGuard, AdminGuard)
   @ApiOperation({ operationId: 'delete' })
   @ApiCreatedResponse({ status: 204, description: 'Book deleted successfully' })
   @ApiConflictResponse()
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.bookService.delete(id);
+  deleteBookById(@Param('id') id: string) {
+    return this.bookService.deleteBookById(id);
   }
 }

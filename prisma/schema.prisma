@@ -47,6 +47,7 @@ model Book {
   id               String  @id @default(uuid())
   title            String
   publicationYear Int     @default(value: 2023)
+  coverImage       String? @default(value: "")
   language         String? @default(value: "French")
   color            String?
   description      String?
@@ -74,11 +75,11 @@ model Review {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String?
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
 
-  book   Book?   @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  bookId String?
+  book   Book   @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  bookId String
 
   @@unique([bookId, userId])
 }
