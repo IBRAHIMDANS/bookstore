@@ -60,7 +60,6 @@ export class CreateBookDto {
   @IsOptional()
   description?: string;
 
-
   @ApiProperty({ required: false, description: "Book's price (optional)" })
   @IsNumber()
   @IsNotEmpty()

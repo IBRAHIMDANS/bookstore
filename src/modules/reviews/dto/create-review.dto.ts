@@ -2,10 +2,16 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength, Min, MinLen
 
 export class CreateReviewDto {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MinLength(1)
   @MaxLength(100)
-  comment: string;
+  title?: string;
+
+  @IsString()
+  @IsOptional()
+  @MinLength(1)
+  @MaxLength(100)
+  comment?: string;
 
   @IsNumber()
   @IsNotEmpty()
@@ -19,5 +25,6 @@ export class CreateReviewDto {
   bookId: string;
 
   @IsString()
+  @IsOptional()
   userId: string;
 }

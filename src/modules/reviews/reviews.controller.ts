@@ -17,8 +17,8 @@ export class ReviewsController {
   @ApiConflictResponse()
   @ApiOperation({ operationId: 'create' })
   @Post()
-  create(@Body(ValidationPipe) review: CreateReviewDto, @CurrentUser() user) {
-    return this.reviewsService.create(review, user);
+  createReview(@Body() review: CreateReviewDto, @CurrentUser() user) {
+    return this.reviewsService.createReview(review, user);
   }
 
   @ApiCreatedResponse({ description: 'Reviews found successfully' })
@@ -26,7 +26,7 @@ export class ReviewsController {
   @ApiOperation({ operationId: 'findAll' })
   @Get()
   findAll(@CurrentUser() user: User, @Query() query) {
-    return this.reviewsService.findAll(query, user);
+    return this.reviewsService.findAll(query);
   }
 
   @ApiCreatedResponse({ description: 'Review found successfully' })
@@ -43,12 +43,12 @@ export class ReviewsController {
   @ApiOperation({ operationId: 'update' })
   @ApiParam({ name: 'id', description: 'Review id' })
   @Patch(':id')
-  update(
+  updateReview(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
     @Body(ValidationPipe) updateReviewDto: UpdateReviewDto,
   ) {
-    return this.reviewsService.update(id, updateReviewDto, currentUser);
+    return this.reviewsService.updateReview(id, updateReviewDto, currentUser);
   }
 
   @ApiCreatedResponse({ description: 'Review deleted successfully' })
@@ -56,7 +56,33 @@ export class ReviewsController {
   @ApiOperation({ operationId: 'remove' })
   @ApiParam({ name: 'id', description: 'Review id' })
   @Delete(':id')
-  remove(@Param('id') id: string, @CurrentUser() currentUser: User) {
-    return this.reviewsService.remove(id, currentUser);
+  removeReview(@Param('id') id: string, @CurrentUser() currentUser: User) {
+    return this.reviewsService.removeReview(id, currentUser);
+  }
+  @ApiCreatedResponse({ description: 'Review found successfully' })
+  @ApiConflictResponse()
+  @ApiOperation({ operationId: 'findByBookId' })
+  @ApiParam({ name: 'bookId', description: 'Book id' })
+  @Get('book/:bookId')
+  findByBookId(@Param('bookId') bookId: string) {
+    return this.reviewsService.findByBookId(bookId);
+  }
+
+  @ApiCreatedResponse({ description: 'Review found successfully' })
+  @ApiConflictResponse()
+  @ApiOperation({ operationId: 'findByUserId' })
+  @ApiParam({ name: 'userId', description: 'User id' })
+  @Get('user/:userId')
+  findByUserId(@Param('userId') userId: string) {
+    return this.reviewsService.findByUserId(userId);
+  }
+
+  @ApiCreatedResponse({ description: 'Review found successfully' })
+  @ApiConflictResponse()
+  @ApiOperation({ operationId: 'findMyReview' })
+  @ApiParam({ name: 'bookId', description: 'Book id' })
+  @Get('my/:bookId')
+  findMyReview(@Param('bookId') bookId: string, @CurrentUser() currentUser: User) {
+    return this.reviewsService.findMyReview(bookId, currentUser);
   }
 }

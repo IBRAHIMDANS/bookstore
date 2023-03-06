@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { ApiConflictResponse, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -6,6 +6,7 @@ import { UpdateBookDto } from '@/modules/books/dto/update-book.dto';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 import { Book } from '@prisma/client';
 import { AdminGuard } from '@/modules/auth/guards/admin.auth.guard';
+import { QueryBookDto } from '@/modules/books/dto/query.book.dto';
 
 @ApiTags('books')
 @Controller('books')
@@ -16,8 +17,8 @@ export class BooksController {
   @ApiConflictResponse()
   @ApiOperation({ operationId: 'create' })
   @Get()
-  findAll() {
-    return this.bookService.findAll();
+  findAll(@Query() query: QueryBookDto) {
+    return this.bookService.findAll(query);
   }
 
   @ApiCreatedResponse({ description: 'Book found successfully' })
