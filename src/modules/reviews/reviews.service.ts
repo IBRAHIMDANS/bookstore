@@ -10,7 +10,7 @@ export class ReviewsService {
   constructor(private readonly bookService: BooksService, private readonly prisma: PrismaService) {}
 
   async findByIdWhereOwned(id: string, user: User): Promise<Review> {
-    const review = await this.findOne(id);
+    const review = await this.findById(id);
     if (review.userId !== user.id) {
       throw new UnauthorizedException('You are not authorized to delete this review');
     }
@@ -18,12 +18,17 @@ export class ReviewsService {
   }
 
   async create(review: CreateReviewDto, user: User) {
-    const bookId = review.bookId;
-    await this.bookService.findById(bookId);
+    /// check if book exists
+    await this.bookService.findById(review.bookId);
+
     return await this.prisma.review.create({
       data: {
         ...review,
         userId: user.id,
+      },
+      include: {
+        book: true,
+        user: true,
       },
     });
   }
@@ -38,7 +43,7 @@ export class ReviewsService {
     });
   }
 
-  async findOne(id: string): Promise<Review> {
+  async findById(id: string): Promise<Review> {
     const review = this.prisma.review.findUnique({
       where: {
         id,

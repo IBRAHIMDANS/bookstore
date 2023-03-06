@@ -1,6 +1,7 @@
 import {
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -15,6 +16,7 @@ import { Transform, Type } from 'class-transformer';
 import { transformArray } from '@/utils';
 import { CreateAuthorDto } from '@/modules/authors/dto/create-author.dto';
 import { CreateGenreDto } from '@/modules/genres/dto/create-genre.dto';
+import { CreateReviewDto } from '@/modules/reviews/dto/create-review.dto';
 
 export class CreateBookDto {
   @ApiProperty({ required: false, description: "Book's id (optional)" })
@@ -58,10 +60,16 @@ export class CreateBookDto {
   @IsOptional()
   description?: string;
 
+
   @ApiProperty({ required: false, description: "Book's price (optional)" })
   @IsNumber()
   @IsNotEmpty()
   price: number;
+
+  @ApiProperty({ required: false, description: "Book's cover Image (optional)" })
+  @IsOptional()
+  @IsString()
+  coverImage?: string;
 
   @ApiProperty({
     required: true,
@@ -86,4 +94,9 @@ export class CreateBookDto {
   @ArrayMinSize(1)
   @IsString({ each: true })
   genres: string[];
+
+  @ApiProperty({ required: false, description: "Book's verified (optional)" })
+  @IsBoolean()
+  @IsOptional()
+  verified: boolean;
 }
