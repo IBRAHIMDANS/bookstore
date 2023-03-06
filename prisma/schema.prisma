@@ -48,9 +48,9 @@ model Book {
   title            String
   publicationYear Int     @default(value: 2023)
   coverImage       String? @default(value: "")
-  language         String? @default(value: "French")
+  language         String @default(value: "French")
   color            String?
-  description      String?
+  description      String? @default(value: "No description")
   price            Float
   verified         Boolean @default(false)
 
@@ -69,9 +69,9 @@ model Book {
 
 model Review {
   id      String  @id @default(uuid())
+  title   String?
   comment String?
   rating    Int
-
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
