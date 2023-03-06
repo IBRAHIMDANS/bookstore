@@ -22,12 +22,12 @@ async function bootstrap() {
   app.use(compression());
   // config helmet
   app.use(helmet());
-  // config global filters
-  app.useGlobalFilters(
-    new HttpExceptionFilter(),
-    new BadRequestExceptionFilter(),
-    new ResourceNotFoundExceptionFilter(),
-  );
+  // // config global filters
+  // app.useGlobalFilters(
+  //   new HttpExceptionFilter(),
+  //   new BadRequestExceptionFilter(),
+  //   new ResourceNotFoundExceptionFilter(),
+  // );
 
   // config global pipes
   app.useGlobalPipes(

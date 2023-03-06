@@ -10,6 +10,7 @@ import { PrismaService } from '@/modules/prisma/prisma.service';
 import { AuthorsService } from '@/modules/authors/authors.service';
 import { GenresService } from '@/modules/genres/genres.service';
 import { UpdateBookDto } from '@/modules/books/dto/update-book.dto';
+import { QueryBookDto } from '@/modules/books/dto/query.book.dto';
 
 @Injectable()
 export class BooksService {
@@ -32,10 +33,30 @@ export class BooksService {
     };
   }
 
-  findAll() {
-    return this.prisma.book.findMany({
-      ...this.includesAuthorsAndGenresAndReviews(),
-    });
+  async findAll(query: QueryBookDto) {
+    const { page = 1, limit = 10, sortingMethod, search = '', language } = query;
+    try {
+      return await this.prisma.book.findMany({
+        where: {
+          OR: [
+            { title: { contains: search, mode: 'insensitive' } },
+            { description: { contains: search, mode: 'insensitive' } },
+            { language: { contains: search, mode: 'insensitive' } },
+            { authors: { some: { fullName: { contains: search, mode: 'insensitive' } } } },
+            { genres: { some: { name: { contains: search, mode: 'insensitive' } } } },
+          ],
+          language: { contains: language, mode: 'insensitive' },
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: {
+          title: sortingMethod === 'ASC' ? 'asc' : 'desc',
+        },
+        ...this.includesAuthorsAndGenresAndReviews(),
+      });
+    } catch (e: any) {
+      throw new BadRequestException(e);
+    }
   }
 
   async findById(id: string) {
@@ -84,7 +105,6 @@ export class BooksService {
         include: { authors: true, genres: true },
       });
     } catch (e) {
-      console.log(e);
       if (e.code === 'P2002') {
         throw new BadRequestException('Error book not created   ', 'Book already exists');
       }
@@ -118,8 +138,7 @@ export class BooksService {
         include: { authors: true, genres: true },
       });
     } catch (e) {
-      console.log(e.message);
-      throw new UnauthorizedException(e);
+      throw new UnauthorizedException(e, e.message);
     }
 
     return 'book updated';
