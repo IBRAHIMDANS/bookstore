@@ -11,17 +11,13 @@ export class CreateReviewDto {
   @IsNotEmpty()
   @Min(1)
   @Max(5)
-  note: number;
+  rating: number;
 
   @IsString()
-  @IsOptional()
   @MinLength(1)
   @MaxLength(100)
   bookId: string;
 
   @IsString()
-  @IsOptional()
-  @MinLength(1)
-  @MaxLength(100)
   userId: string;
 }
