@@ -69,6 +69,7 @@ model Book {
 
 model Review {
   id      String  @id @default(uuid())
+  title   String?
   comment String?
   rating    Int
 
