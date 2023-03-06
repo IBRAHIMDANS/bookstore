@@ -18,13 +18,28 @@ export class BooksService {
     private readonly authorsService: AuthorsService,
     private readonly genresService: GenresService,
   ) {}
+  private includesAuthorsAndGenresAndReviews() {
+    return {
+      include: {
+        authors: {
+          select: { firstName: true, lastName: true, fullName: true },
+        },
+        genres: {
+          select: { name: true },
+        },
+        reviews: true,
+      },
+    };
+  }
 
   findAll() {
-    return this.prisma.book.findMany();
+    return this.prisma.book.findMany({
+      ...this.includesAuthorsAndGenresAndReviews(),
+    });
   }
 
   async findById(id: string) {
-    const book = await this.prisma.book.findUnique({ where: { id } });
+    const book = await this.prisma.book.findUnique({ where: { id }, ...this.includesAuthorsAndGenresAndReviews() });
     if (!book) {
       throw new NotFoundException('Book not found');
     }
@@ -51,49 +66,45 @@ export class BooksService {
     try {
       const authors = await this.authorsService.findOrCreate(book.authors);
       const genres = await this.genresService.findOrCreate(book.genres);
-
+      const bookData: any = {
+        ...book,
+        genres: {
+          set: [],
+          connect: genres.map(({ id }) => ({ id })),
+        },
+        authors: {
+          set: [],
+          connect: authors.map(({ id }) => ({ id })),
+        },
+      };
       return await this.prisma.book.create({
         data: {
-          ...book,
-          genres: {
-            connect: genres.map(genre => ({ id: genre.id })),
-          },
-          authors: {
-            connect: authors.map(author => ({ id: author.id })),
-          },
+          ...bookData,
         },
         include: { authors: true, genres: true },
       });
     } catch (e) {
-      console.log(e.message);
-      throw new BadRequestException('Error book not created   ', e.message);
+      console.log(e);
+      if (e.code === 'P2002') {
+        throw new BadRequestException('Error book not created   ', 'Book already exists');
+      }
+      throw new UnauthorizedException('Error book not created   ', e.message);
     }
   }
 
-  async delete(id: string) {
-    const book = await this.findById(id);
-
-    try {
-      await this.prisma.book.delete({ where: { id: book.id } });
-    } catch (e) {
-      throw new UnauthorizedException('Error Book not deleted');
-    }
-  }
-
-  async update({ id, book }: { book: UpdateBookDto; id: string }) {
+  async updateBookById({ id, book }: { book: UpdateBookDto; id: string }) {
     await this.findById(id);
-    const data: any = book;
-    console.log(data, 'data');
+    const bookData: any = book;
     if (book.authors) {
       const authors = await this.authorsService.findOrCreate(book.authors);
-      data.authors = {
+      bookData.authors = {
         set: [],
         connect: authors.map(author => ({ id: author.id })),
       };
     }
     if (book.genres) {
       const genres = await this.genresService.findOrCreate(book.genres);
-      data.genres = {
+      bookData.genres = {
         set: [],
         connect: genres.map(genre => ({ id: genre.id })),
       };
@@ -102,14 +113,28 @@ export class BooksService {
       await this.prisma.book.update({
         where: { id },
         data: {
-          ...data,
+          ...bookData,
         },
         include: { authors: true, genres: true },
       });
     } catch (e) {
       console.log(e.message);
-      return new UnauthorizedException(e);
+      throw new UnauthorizedException(e);
     }
+
     return 'book updated';
+  }
+
+  async deleteBookById(id: string) {
+    const book = await this.findById(id);
+
+    try {
+      await this.prisma.book.delete({ where: { id: book.id } });
+    } catch (e) {
+      throw new UnauthorizedException('Error Book not deleted');
+    }
+    return {
+      message: 'Book deleted',
+    };
   }
 }
