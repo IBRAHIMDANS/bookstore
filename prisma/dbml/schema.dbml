@@ -1,0 +1,102 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id String [pk]
+  firstName String [not null, default: 'John']
+  lastName String [not null, default: 'Doe']
+  username String [unique, default: 'JohnDoe']
+  email String [unique, not null]
+  isEmailVerified Boolean [not null, default: false]
+  password String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  deletedAt DateTime
+  authentications AuthenticationType[] [not null]
+  isDeleted Boolean [not null, default: false]
+  isActive Boolean [not null, default: true]
+  role Role [not null, default: 'USER']
+  books Book [not null]
+  reviews Review [not null]
+}
+
+Table Book {
+  id String [pk]
+  title String [not null]
+  publicationYear Int [not null, default: 2023]
+  coverImage String [default: '']
+  language String [not null, default: 'French']
+  color String
+  description String [default: 'No description']
+  price Float [not null]
+  verified Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  user User
+  userId String
+  genres Genre [not null]
+  authors Author [not null]
+  reviews Review [not null]
+
+  indexes {
+    (title, publicationYear, language) [unique]
+  }
+}
+
+Table Review {
+  id String [pk]
+  title String
+  comment String
+  rating Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  user User [not null]
+  userId String [not null]
+  book Book [not null]
+  bookId String [not null]
+
+  indexes {
+    (bookId, userId) [unique]
+  }
+}
+
+Table Genre {
+  id String [pk]
+  name String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  books Book [not null]
+}
+
+Table Author {
+  id String [pk]
+  firstName String [not null]
+  lastName String [not null]
+  fullName String [not null, default: 'John Doe']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  books Book [not null]
+
+  indexes {
+    (firstName, lastName, fullName) [unique]
+  }
+}
+
+Enum AuthenticationType {
+  GOOGLE
+  FACEBOOK
+  APPLE
+  EMAIL
+}
+
+Enum Role {
+  USER
+  ADMIN
+}
+
+Ref: Book.userId > User.id [delete: Cascade]
+
+Ref: Review.userId > User.id [delete: Cascade]
+
+Ref: Review.bookId > Book.id [delete: Cascade]
