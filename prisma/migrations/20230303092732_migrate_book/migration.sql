@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Book" ALTER COLUMN "color" DROP NOT NULL;
