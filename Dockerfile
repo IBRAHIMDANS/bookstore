@@ -1,51 +1,23 @@
-###################
-# BUILD FOR LOCAL DEVELOPMENT
-###################
+FROM node:18 AS builder
 
-FROM node:18 As development
-RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY --chown=node:node pnpm-lock.yaml ./
+COPY package*.json ./
+COPY prisma ./prisma/
 
-RUN pnpm fetch --prod
+RUN npm install
 
-COPY --chown=node:node . .
-RUN pnpm install
+COPY . .
 
-USER node
+RUN npm run build
 
-###################
-# BUILD FOR PRODUCTION
-###################
+FROM node:18
 
-FROM node:18 As build
-RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
 
-WORKDIR /usr/src/app
-
-COPY --chown=node:node pnpm-lock.yaml ./
-
-COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
-
-COPY --chown=node:node . .
-
-RUN pnpm build
-
-ENV NODE_ENV production
-
-RUN pnpm install --prod
-
-USER node
-
-###################
-# PRODUCTION
-###################
-
-FROM node:18-alpine As production
-
-COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node --from=build /usr/src/app/dist ./dist
-
-CMD [ "node", "dist/main.js" ]
+EXPOSE 3000
+CMD ["npm", "run", "start:migrate:prod" ]

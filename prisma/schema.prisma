@@ -5,9 +5,7 @@ generator client {
   provider = "prisma-client-js"
   previewFeatures = ["extendedWhereUnique"]
 }
-generator dbml {
-  provider = "prisma-dbml-generator"
-}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
