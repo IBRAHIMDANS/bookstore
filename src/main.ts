@@ -61,5 +61,4 @@ async function bootstrap() {
     console.log(`App Starting to port : ${configService.get('app.baseUrl')}`);
   });
 }
-
-bootstrap();
+void bootstrap();
