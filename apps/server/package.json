@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "bookstore-server",
   "version": "0.0.1",
   "description": "basic app with nest.js prisma add logic file :)",
   "author": "ibrahima dansoko",
@@ -55,8 +55,6 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
-    "eslint-config-custom": "workspace:*",
-    "tsconfig": "workspace:*",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
