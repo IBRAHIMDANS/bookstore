@@ -1,5 +1,5 @@
 {
-  "name": "bookstore-server",
+  "name": "server",
   "version": "0.0.1",
   "description": "basic app with nest.js prisma add logic file :)",
   "author": "ibrahima dansoko",

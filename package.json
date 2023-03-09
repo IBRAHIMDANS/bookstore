@@ -1,5 +1,5 @@
 {
-  "name": "book-store-full-stack",
+  "name": "book-store",
   "version": "0.0.0",
   "private": true,
   "author": {
@@ -13,7 +13,9 @@
   ],
   "scripts": {
     "build": "turbo run build",
+    "start": "turbo run start",
     "dev": "turbo run dev --parallel",
+    "test": "turbo run test",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "husky install"
@@ -28,7 +30,8 @@
     "turbo": "latest"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=14.0.0",
+    "pnpm": ">=7.0.0"
   },
   "packageManager": "pnpm@7.29.0",
   "lint-staged": {
