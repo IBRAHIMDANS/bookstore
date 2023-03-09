@@ -1,99 +1,73 @@
-<p align="center">
- <img src="./assets/logo.jpg" width='200px'  alt="Logo" />
-</p>
+# Turborepo starter
 
+This is an official pnpm starter turborepo.
 
-### Stack
+## What's inside?
 
-![TypeScript](https://img.shields.io/badge/-TypeScript-%23007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
-![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
-![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)
-![Docker](https://img.shields.io/badge/-Docker-%232496ED?style=for-the-badge&logo=docker&logoColor=white)
+This turborepo uses [pnpm](https://pnpm.io) as a package manager. It includes the following packages/apps:
 
-### Features
+### Apps and Packages
 
-- [x] Authentication
-- [x] Authorization
-- [x] User management
-- [x] Role management
-- [x] Permission management
+- `docs`: a [Next.js](https://nextjs.org/) app
+- `web`: another [Next.js](https://nextjs.org/) app
+- `ui`: a stub React component library shared by both `web` and `docs` applications
+- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
+- `tsconfig`: `tsconfig.json`s used throughout the monorepo
 
+Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
-## Description
+### Utilities
 
-BookStore is a application that allows you to manage books and authors. It is a backend application written in TypeScript using the NestJS framework.
-The application is also equipped with a Dockerfile that allows you to run the application in a Docker container.
+This turborepo has some additional tools already setup for you:
 
-## Requirements
+- [TypeScript](https://www.typescriptlang.org/) for static type checking
+- [ESLint](https://eslint.org/) for code linting
+- [Prettier](https://prettier.io) for code formatting
 
-- [Node.js](https://nodejs.org/en/)
-- [pnpm](https://pnpm.io/)
-- [PostgreSQL](https://www.postgresql.org/)
-- [Docker](https://www.docker.com/)
+### Build
 
+To build all apps and packages, run the following command:
 
-## Installation
-
-```bash
-$ pnpm install
+```
+cd my-turborepo
+pnpm run build
 ```
 
-## Running the app
+### Develop
 
-```bash
-# development
-$ pnpm run start
+To develop all apps and packages, run the following command:
 
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+```
+cd my-turborepo
+pnpm run dev
 ```
 
-## Docker
+### Remote Caching
 
-You can build the docker image by running the following command:
+Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
 
-```bash
-$ docker build -t bookstore .
+By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
+
+```
+cd my-turborepo
+pnpm dlx turbo login
 ```
 
-And then you can run the docker image by running the following command:
+This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
 
-```bash
-$ docker run -p 3000:3000 bookstore
+Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your turborepo:
+
+```
+pnpm dlx turbo link
 ```
 
-## Prisma
+## Useful Links
 
-To generate prisma client run the following command:
+Learn more about the power of Turborepo:
 
-```bash
-$ pnpm run prisma:generate
-```
-## Swagger
-
-You can access the swagger API documentation by accessing the following address:
-
-```bash
-http://localhost:3000/api
-```
-
-## SEEDS
-
-To run seeds run the following command:
-
-```bash
-$ pnpm run seed
-```
-
-## Model diagram
-
-<p align="center">
- <img src="./assets/model_diagram.png" width='500px'  alt="Model diagram" />
-</p>
-
+- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
+- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
+- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
+- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
+- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
+- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
