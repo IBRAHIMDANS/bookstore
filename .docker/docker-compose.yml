@@ -1,20 +1,33 @@
 version: "3.9"
+
 services:
-  api:
-    container_name: api
+  web:
+    container_name: web
     build:
-        context: ../.
-        target: development
-        dockerfile: Dockerfile
+      context: .
+      dockerfile: ./apps/web/Dockerfile
     restart: always
     ports:
       - "3000:3000"
+    networks:
+      - app_network
+  api:
+    container_name: api
+    build:
+      context: ../apps/server
+      dockerfile: ../apps/server/Dockerfile
+      target: development
+    restart: always
+    ports:
+      - "3002:3002"
       - "9229:9229"
     env_file:
-      - ../.env
+      - ../apps/server/.env
     depends_on:
       - postgres
       - pgadmin
+    networks:
+      - app_network
   postgres:
     container_name: postgres_container
     image: postgres:latest
@@ -26,7 +39,7 @@ services:
     volumes:
       - ./postgres-data:/.docker/volumes/postgres
     env_file:
-      - ../.env
+      - ../apps/server/.env
     ports:
       - "5432:5432"
     restart: unless-stopped
@@ -42,5 +55,8 @@ services:
       - "${PGADMIN_PORT:-5050}:80"
     restart: unless-stopped
 networks:
+  app_network:
+    external: true
   postgres:
     driver: bridge
+

@@ -81,6 +81,7 @@ importers:
       compression: ^1.7.4
       cookie-parser: ^1.4.6
       eslint: ^8.0.1
+      eslint-config-custom: workspace:*
       eslint-config-prettier: ^8.3.0
       eslint-plugin-prettier: ^4.0.0
       helmet: ^6.0.1
@@ -101,6 +102,7 @@ importers:
       ts-jest: 29.0.3
       ts-loader: ^9.2.3
       ts-node: ^10.0.0
+      tsconfig: workspace:*
       tsconfig-paths: 4.1.1
       typescript: ^4.7.4
       webpack: ^5.75.0
@@ -145,6 +147,7 @@ importers:
       '@typescript-eslint/eslint-plugin': 5.54.1_mlk7dnz565t663n4razh6a6v6i
       '@typescript-eslint/parser': 5.54.1_ycpbpc6yetojsgtrx3mwntkhsu
       eslint: 8.35.0
+      eslint-config-custom: link:../../packages/eslint-config-custom
       eslint-config-prettier: 8.7.0_eslint@8.35.0
       eslint-plugin-prettier: 4.2.1_xprnzp4ul2bcpmfe73av4voica
       jest: 29.3.1_zfha7dvnw4nti6zkbsmhmn6xo4
@@ -156,6 +159,7 @@ importers:
       ts-jest: 29.0.3_hfbqr3rujuziiw7lzul6vua4r4
       ts-loader: 9.4.2_w6zjx75bct6vaixfrpcwixys6m
       ts-node: 10.9.1_bdgp3l2zgaopogaavxusmetvge
+      tsconfig: link:../../packages/tsconfig
       tsconfig-paths: 4.1.1
       typescript: 4.9.5
       webpack: 5.76.0
