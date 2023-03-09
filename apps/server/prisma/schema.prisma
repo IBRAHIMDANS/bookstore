@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["extendedWhereUnique"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AuthenticationType {
+  GOOGLE
+  FACEBOOK
+  APPLE
+  EMAIL
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id              String               @id @default(uuid())
+  firstName       String               @default("John")
+  lastName        String               @default("Doe")
+  username        String?              @unique @default("JohnDoe")
+  email           String               @unique
+  isEmailVerified Boolean              @default(false)
+  password        String
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @default(now()) @updatedAt
+  deletedAt       DateTime?
+  authentications AuthenticationType[] @default([EMAIL])
+  isDeleted       Boolean              @default(false)
+  isActive        Boolean              @default(true)
+  role            Role                 @default(USER)
+
+  books   Book[]
+  reviews Review[]
+}
+
+model Book {
+  id               String  @id @default(uuid())
+  title            String
+  publicationYear Int     @default(value: 2023)
+  coverImage       String? @default(value: "")
+  language         String @default(value: "French")
+  color            String?
+  description      String? @default(value: "No description")
+  price            Float
+  verified         Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String?
+
+  genres  Genre[]
+  authors Author[]
+  reviews Review[]
+
+  @@unique([title, publicationYear, language])
+}
+
+model Review {
+  id      String  @id @default(uuid())
+  title   String?
+  comment String?
+  rating    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+
+  book   Book   @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  bookId String
+
+  @@unique([bookId, userId])
+}
+
+model Genre {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  books     Book[]
+}
+
+model Author {
+  id String @id @default(uuid())
+
+  firstName String
+  lastName  String
+  fullName  String @default(value: "John Doe")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  books     Book[]
+
+  @@unique([firstName, lastName, fullName])
+}
